@@ -15,31 +15,29 @@ export default function App() {
     useEffect(() => {
         socket.current = connectWS();
 
-        socket.current.on('connect', () => {
-            socket.current.on('roomNotice', (userName) => {
-                console.log(`${userName} joined to group!`);
-            });
+        socket.current.on('roomNotice', (userName) => {
+            console.log(`${userName} joined to group!`);
+        });
 
-            socket.current.on('chatMessage', (msg) => {
-                // push to existing messages list
-                console.log('msg', msg);
-                setMessages((prev) => [...prev, msg]);
-            });
+        socket.current.on('chatMessage', (msg) => {
+            // push to existing messages list
+            console.log('msg', msg);
+            setMessages((prev) => [...prev, msg]);
+        });
 
-            socket.current.on('typing', (userName) => {
-                setTypers((prev) => {
-                    const isExist = prev.find((typer) => typer === userName);
-                    if (!isExist) {
-                        return [...prev, userName];
-                    }
+        socket.current.on('typing', (userName) => {
+            setTypers((prev) => {
+                const isExist = prev.find((typer) => typer === userName);
+                if (!isExist) {
+                    return [...prev, userName];
+                }
 
-                    return prev;
-                });
+                return prev;
             });
+        });
 
-            socket.current.on('stopTyping', (userName) => {
-                setTypers((prev) => prev.filter((typer) => typer !== userName));
-            });
+        socket.current.on('stopTyping', (userName) => {
+            setTypers((prev) => prev.filter((typer) => typer !== userName));
         });
 
         return () => {
@@ -98,9 +96,8 @@ export default function App() {
             text: t,
             ts: Date.now(),
         };
-        setMessages((m) => [...m, msg]);
 
-        // emit
+        // emit to server - it will broadcast to all clients including this one
         socket.current.emit('chatMessage', msg);
 
         setText('');

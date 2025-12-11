@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('chatMessage', (msg) => {
-        socket.to(ROOM).emit('chatMessage', msg);
+        io.to(ROOM).emit('chatMessage', msg);
     });
 
     socket.on('typing', (userName) => {
